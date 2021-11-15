@@ -1,0 +1,23 @@
+final ApiClient client = Config.fromConfig("/root/.kube/config");
+Exec exec = new Exec(client);
+Process proc = exec.exec(namespace,podname,execCommand,"",true,true)
+
+InputStream inputStream = proc.getInputStream();
+try {
+  byte[] buffer = new byte[1024];
+  int i = 0;
+  while ((i=inputStream.read(buffer)) != -1) {
+    sendMessage(webSocket, Arrays.copyOfRange(buffer, 0, i));// websocket.send(new String(buffer));
+  }
+} catch (Exception e) {
+  
+}
+
+//将消息转发到终端
+private void transToPod(Process process, String command) {
+  if (process != null) {
+    OutputStream outputStream = process.getOutputStream();
+    outputStream.write(command.getBytes());
+    outputStream.flush();
+  }
+}
